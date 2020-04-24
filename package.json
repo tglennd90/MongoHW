@@ -1,0 +1,31 @@
+{
+  "name": "mongohw",
+  "version": "1.0.0",
+  "description": "MongoDB Homework Assignment",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tglennd90/MongoHW.git"
+  },
+  "author": "Tatum Daily",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/tglennd90/MongoHW/issues"
+  },
+  "homepage": "https://github.com/tglennd90/MongoHW#readme",
+  "dependencies": {
+    "axios": "^0.19.2",
+    "body-parser": "^1.19.0",
+    "cheerio": "^1.0.0-rc.3",
+    "colors": "^1.4.0",
+    "express": "^4.17.1",
+    "express-handlebars": "^4.0.3",
+    "mongoose": "^5.9.10",
+    "morgan": "^1.10.0",
+    "request": "^2.88.2"
+  }
+}
