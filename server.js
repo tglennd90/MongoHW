@@ -13,10 +13,22 @@ app.use(
     })
 );
 
+app.use(express.static(process.cwd() + "/public"));
+
 const exphbs = require("express-handlebars");
 
 app.engine("handlebars", exphbs({ defaultLayout: "main" }));
 app.set("view engine", "handlebars");
+
+mongoose.connect("mongodb://localhost/MongoHW");
+
+let db = mongoose.connection;
+
+db.on("error", console.error.bind(console, "Connection Error: ".bgRed.white));
+db.once("open", function() {
+    console.log(" ");
+    console.log("You're an animal baby! (Connected to Mongoose)".green);
+});
 
 let PORT = process.env.PORT || 3000;
 
