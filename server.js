@@ -30,6 +30,9 @@ db.once("open", function() {
     console.log("You're an animal baby! (Connected to Mongoose)".green);
 });
 
+const routes = require("./controller/controller.js");
+app.use("/", routes);
+
 let PORT = process.env.PORT || 3000;
 
 app.listen(PORT, function() {
