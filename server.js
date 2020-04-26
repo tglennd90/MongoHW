@@ -20,7 +20,9 @@ const exphbs = require("express-handlebars");
 app.engine("handlebars", exphbs({ defaultLayout: "main" }));
 app.set("view engine", "handlebars");
 
-mongoose.connect("mongodb://localhost/MongoHW");
+const MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/MongoHW";
+
+mongoose.connect(MONGODB_URI, { useNewUrlParser: true });
 
 let db = mongoose.connection;
 

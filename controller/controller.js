@@ -4,17 +4,24 @@ const path = require("path");
 const request = require("request");
 const cheerio = require("cheerio");
 const colors = require("colors");
+const db = require("../models");
 
-const Comment = require("../models/comments.js");
-const Article = require("../models/articles.js");
+// const Comment = require("../models/Comments.js");
+// const Article = require("../models/Articles.js");
+
+
 
 router.get("/", function(req, res) {
-    res.redirect("/articles");
+    db.Articles.find({})
+            .then(article => res.render("index", { article }))
+            .catch(function(err){
+                res.json(err)
+            })
 });
 
 router.get("/scrape", function(req,res) {
     request("http://www.theverge.com", function(error, response, html) {
-        const $ = cheerio.load(html);
+        let $ = cheerio.load(html);
         let titlesArray = [];
 
         $(".c-entry-box--compact__title").each(function(i, element) {
@@ -27,9 +34,9 @@ router.get("/scrape", function(req,res) {
                 if (titlesArray.indexOf(result.title) == -1) {
                     titlesArray.push(result.title);
 
-                    Article.count({ title: result.title }, function(err, test) {
+                    db.Articles.count({ title: result.title }, function(err, test) {
                         if (test === 0) {
-                            let entry = new Article(result);
+                            let entry = new db.Articles(result);
 
                             entry.save(function(err, doc) {
                                 if (err) {
@@ -47,25 +54,21 @@ router.get("/scrape", function(req,res) {
                 console.log("Not saved to DB, missing data".bgRed.white);
             }
         });
-
         res.redirect("/");
+        // res.json();
     });
 });
 
 router.get("/articles", function(req, res) {
-    Article.find().sort({ _id: -1}).exec(function(err, doc) {
-        if (err) {
-            console.log(err);
-        } else {
-            let artcl = { article: doc };
-
-            res.render("index", artcl);
-        }
-    });
+    db.Articles.find({})
+            .then(article => res.render("articles", { article }))
+            .catch(function(err){
+                res.json(err)
+            })
 });
 
 router.get("/articles-json", function(req, res) {
-    Article.find({}, function(err, doc) {
+    db.Articles.find({}, function(err, doc) {
         if (err) {
             console.log(err);
         } else {
@@ -75,7 +78,7 @@ router.get("/articles-json", function(req, res) {
 });
 
 router.get("/clearAll", function(req, res) {
-    Article.remove({}, function(err, doc) {
+    db.Articles.remove({}, function(err, doc) {
         if (err) {
             console.log(err);
         } else {
@@ -92,7 +95,7 @@ router.get("/readArticle/:id", function(res, res) {
         body: []
     };
 
-    Article.findOne({ _id: articleId }).populate("comment").exec(function(err, doc) {
+    db.Articles.findOne({ _id: articleId }).populate("comment").exec(function(err, doc) {
         if (err) {
             console.log("Error: ".red + err);
         } else {
@@ -105,7 +108,7 @@ router.get("/readArticle/:id", function(res, res) {
                 $(".l-col__main").each(function(i, element) {
                     hbsObj.body = $(this).children(".c-entry-content").children("p").text();
 
-                    res.render("article, hbsObj");
+                    res.render("article", hbsObj);
                     return false;
                 })
             })
@@ -132,7 +135,7 @@ router.post("/comment/:id", function(req, res) {
             console.log(doc._id);
             conosole.log(articleId);
 
-            Article.findOneAndUpdate({ _id: req.params.id }, { $push: { comment: doc._id } }, { new: true }).exec(function(err, doc) {
+            db.Articles.findOneAndUpdate({ _id: req.params.id }, { $push: { comment: doc._id } }, { new: true }).exec(function(err, doc) {
                 if (err) {
                     console.log(err);
                 } else {
